@@ -5,10 +5,7 @@ import java.util.Arrays;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 
-import charts.ExponentialChart;
-import charts.LinearChart;
-import charts.LogarithmicChart;
-import charts.PolynomialChart;
+import charts.*;
 
 //import static charts.LinearChart.show;
 import static java.lang.Math.*;
@@ -23,10 +20,10 @@ public class Main {
         double[] arrX = Arrays.stream(x.split(" ")).mapToDouble(Double::parseDouble).toArray();
         double[] arrY = Arrays.stream(y.split(" ")).mapToDouble(Double::parseDouble).toArray();
         //linear(arrX,arrY);
-        //polynomial(arrX,arrY);
+        polynomial(arrX,arrY);
         //exponential(arrX,arrY);
         //logarithmic(arrX,arrY);
-        power(arrX,arrY);
+        //power(arrX,arrY);
     }
 
     public static double sko(double[] fi, double[] y){
@@ -68,18 +65,20 @@ public class Main {
         double sxxx = DoubleStream.of(arrX).map(num -> pow(num,3)).sum();
         double sxxxx = DoubleStream.of(arrX).map(num -> pow(num,4)).sum();
         double sxxy = IntStream.range(0,n).mapToDouble(i -> pow(arrX[i],2) * arrY[i]).sum();
-        final double a0 = -2.99;
-        final double a1 = 1.58;
-        final double a2 = -0.011;
+
+        double[][] sendX = {{n,sx,sxx},{sx,sxx,sxxx},{sxx,sxxx,sxxxx}};
+        double[] sendC = {sy,sxy,sxxy};
+        double[] answer = Kramer.solve(sendX,sendC);
+
         double[] yPolynomial = new double[n];
-        Arrays.setAll(yPolynomial,i -> a2 * pow(arrX[i],2) + a1 * arrX[i] + a0);
+        Arrays.setAll(yPolynomial,i -> answer[2] * pow(arrX[i],2) + answer[1] * arrX[i] + answer[0]);
 
         double sPolynomial = 0;
         for (int i = 0; i < n; i++) {
             sPolynomial += (pow(yPolynomial[i] - arrY[i],2));
         }
         //вывод графика
-        PolynomialChart.show(a2,a1,a0);
+        PolynomialChart.show(answer[2],answer[1],answer[0]);
     }
 
     //Экспоненциальная ф-ия
@@ -127,6 +126,7 @@ public class Main {
         LogarithmicChart.show(a,b);
     }
 
+    //Степенная ф-ия
     public static void power(double[] arrX, double[] arrY){
         int n = arrX.length;
         double slnx = DoubleStream.of(arrX).map(num -> log(num)).sum();
@@ -144,12 +144,6 @@ public class Main {
             sPower += (pow(yPower[i] - arrY[i],2));
         }
 
-        System.out.println("a = " + a);
-        System.out.println("b = " + b);
-        for (double huy :
-                yPower) {
-            System.out.println("huy = " + huy);
-        }
+        PowerChart.show(a,b);
     }
-
 }
