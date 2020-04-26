@@ -19,7 +19,7 @@ public class LinearChart {
 
         XYDataset xyDataset = new XYSeriesCollection(series);
         JFreeChart chart = ChartFactory
-                .createXYLineChart(a + "*x+" + b, "x", "y",
+                .createXYLineChart(a + "*x+(" + b + ")", "x", "y",
                         xyDataset, PlotOrientation.VERTICAL,
                         true,true, true);
         JFrame frame = new JFrame("StaticChart");

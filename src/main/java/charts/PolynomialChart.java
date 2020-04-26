@@ -21,7 +21,7 @@ public class PolynomialChart {
 
         XYDataset xyDataset = new XYSeriesCollection(series);
         JFreeChart chart = ChartFactory
-                .createXYLineChart(a2 + "*x²+" + a1 + "*x+" + a0, "x", "y",
+                .createXYLineChart(a2 + "*x²+" + a1 + "*x+(" + a0 + ")", "x", "y",
                         xyDataset, PlotOrientation.VERTICAL,
                         true,true, true);
         JFrame frame = new JFrame("StaticChart");
