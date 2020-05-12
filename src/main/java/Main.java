@@ -8,6 +8,7 @@ import java.util.stream.IntStream;
 
 import charts.*;
 import com.opencsv.CSVWriter;
+import org.jfree.ui.RefineryUtilities;
 
 import static java.lang.Math.*;
 
@@ -74,6 +75,13 @@ public class Main {
                 ,Double.toString(logarithmic[1])
                 ,Double.toString(power[1])
         });
+
+        double[] a = {linear[0], polynomial[0], exponential[0], logarithmic[0], power[0]};
+        double[] b = {linear[1], polynomial[1], exponential[1], logarithmic[1], power[1]};
+        final LineChart demo = new LineChart("XYSplineRenderer", a, b, polynomial[2]);
+        demo.pack();
+        RefineryUtilities.centerFrameOnScreen(demo);
+        demo.setVisible(true);
 
         writer.writeNext(new String[] {"c", "", "", Double.toString(polynomial[2]), "", "", ""});
         writer.close();
@@ -156,7 +164,7 @@ public class Main {
         double sko = sko(yLinear, arrY);
 
         //вывод графика
-        LinearChart.show(a,b);
+        //LinearChart.show(a,b);
 
         return new double[] {a,b,sLinear,sko};
     }
@@ -187,7 +195,7 @@ public class Main {
         double sko = sko(yPolynomial, arrY);
 
         //вывод графика
-        PolynomialChart.show(answer[2],answer[1],answer[0]);
+        //PolynomialChart.show(answer[2],answer[1],answer[0]);
 
 
         return new double[] {answer[2], answer[1], answer[0], sPolynomial,sko};
@@ -197,10 +205,10 @@ public class Main {
     public static double[] exponential(double[] arrX, double[] arrY){
         int n = arrX.length;
         double sx = DoubleStream.of(arrX).sum();
-        double sy = DoubleStream.of(arrY).sum();
+        double sy = DoubleStream.of(arrY).map(Math::log).sum();
         double sxx = DoubleStream.of(arrX).map(num -> pow(num,2)).sum();
-        double sxy = IntStream.range(0,n).mapToDouble(i -> arrX[i] * arrY[i]).sum();
-        double a = exp((sxy * n - sx * sy)/(sxx * n - sx * sx));
+        double sxy = IntStream.range(0,n).mapToDouble(i -> arrX[i] * log(arrY[i])).sum();
+        double a = ((sxy * n - sx * sy)/(sxx * n - sx * sx));
         double b = exp((sxx * sy - sx * sxy)/(sxx*n-sx*sx));
         double[] yExponential = new double[n];
         Arrays.setAll(yExponential,i -> a * exp(b * arrX[i]));
@@ -213,7 +221,7 @@ public class Main {
         double sko = sko(yExponential, arrY);
 
         //Вывод графика
-        ExponentialChart.show(a,b);
+        //ExponentialChart.show(a,b);
 
         return new double[] {a,b,sExponential,sko};
     }
@@ -237,20 +245,21 @@ public class Main {
 
         double sko = sko(yLogarithmic, arrY);
 
-        LogarithmicChart.show(a,b);
+        //LogarithmicChart.show(a,b);
 
         return new double[] {a,b,sLogarithmic,sko};
     }
 
     //Степенная ф-ия
     public static double[] power(double[] arrX, double[] arrY){
+        double on = 0.091;
         int n = arrX.length;
         double slnx = DoubleStream.of(arrX).map(num -> log(num)).sum();
         double slny = DoubleStream.of(arrY).map(num -> log(num)).sum();
         double slnxx = DoubleStream.of(arrX).map(num -> log(num) * log(num)).sum();
         double slnxlny = IntStream.range(0,n).mapToDouble(i -> log(arrX[i]) * log(arrY[i])).sum();
         double b = (n * slnxlny - slnx * slny)/(n * slnxx - slnx * slnx);
-        double a = exp(0.091 * slny - b/n * slnx);
+        double a = exp(on * slny - b/n * slnx);
 
         double[] yPower = new double[11];
         Arrays.setAll(yPower,i -> a * pow(arrX[i],b));
@@ -262,7 +271,7 @@ public class Main {
 
         double sko = sko(yPower, arrY);
 
-        PowerChart.show(a,b);
+        //PowerChart.show(a,b);
 
         return new double[] {a,b,sPower,sko};
     }
